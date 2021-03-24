@@ -1,0 +1,7 @@
+*.pyc
+*/__pycache__/
+*.vscode/
+data/*
+output/*
+python/module/board/data/*
+python/module/board/output/*
