@@ -60,7 +60,7 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
 
     #生成目标视频文件
     fileName = result_path + '/' + tourist_id + '_' + time + '.mp4'
-    final_clip_video_audio = f.write_videofile(fileName, fps=24, remove_temp=False)
+    final_clip_video_audio = f.write_videofile(fileName, fps=24, remove_temp=True)
     # exit_target = result_path + "/target.mp4"
     # if not os.path.exists(exit_target):
     #     print("move mp4 file to result path")
@@ -184,7 +184,7 @@ def add_args(ap):
 
 if __name__ == '__main__':
 
-    app.run(host='127.0.0.1', port=9000, debug=True,
+    app.run(host='192.168.1.128', port=9000, debug=True,
         threaded=True, use_reloader=False)
     
     # ap = argparse.ArgumentParser()
