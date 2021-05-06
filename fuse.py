@@ -85,7 +85,7 @@ class Tourist:
         path = self.result_path + '/' + self.id + '_' + self.timestamp + '.mp4'
         scenicId = self.scenic_area_name
         touristId = self.id
-        json_data = {'scenicId':scenicId, 'touristId':touristId, 'path':path}
+        json_data = {'scenicId':scenicId, 'touristId':touristId, 'path':os.path.abspath(path)}
         r = requests.post("http://127.0.0.1:8084/algo/v1/video/saveVideo", json=json_data)
     
     def fuse(self):

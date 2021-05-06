@@ -1,3 +1,4 @@
 flask
 moviepy
+ffmpeg
 numpy == 1.16.6
