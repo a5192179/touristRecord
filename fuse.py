@@ -31,7 +31,9 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
     audio file: base_path/age_gender_weather_season.mp3
     '''
     L = []
+    print('fuse ori file:')
     for videoFile in multi_video_list:
+        print(videoFile)
         video = mp.VideoFileClip(videoFile)
         L.append(video)
     # L = multi_video_list
@@ -40,6 +42,7 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
     print(final_clip_video.duration)
 
     #获取音频
+    print('fuse music file:', music_path)
     audioFile = music_path
     audioclip = mp.AudioFileClip(audioFile)
     #audioclip = audioclip.subclip(0, 30)
@@ -60,6 +63,7 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
 
     #生成目标视频文件
     fileName = result_path + '/' + tourist_id + '_' + time + '.mp4'
+    print('fuse result:', fileName)
     final_clip_video_audio = f.write_videofile(fileName, fps=24, remove_temp=False)
     # exit_target = result_path + "/target.mp4"
     # if not os.path.exists(exit_target):
@@ -80,12 +84,18 @@ class Tourist:
         self.result_path = result_path
         self.bFused = False
         self.bReturn = False
+        print('receive id:', id,
+              'timestamp:', timestamp,
+              'len(locs):', len(locs),
+              'len(paths):', len(paths),
+              'music_path:', music_path,
+              'result_path:', result_path)
 
     def send_json(self):
         path = self.result_path + '/' + self.id + '_' + self.timestamp + '.mp4'
         scenicId = self.scenic_area_name
         touristId = self.id
-        json_data = {'scenicId':scenicId, 'touristId':touristId, 'path':os.path.abspath(path)}
+        json_data = {'scenicId':scenicId, 'touristId':touristId, 'path':os.path.abspath(path), 'timestamp':self.timestamp}
         r = requests.post("http://127.0.0.1:8084/algo/v1/video/saveVideo", json=json_data)
     
     def fuse(self):
@@ -132,10 +142,13 @@ def testFlask():
             locs_base.append('')
             video_base.append('')
         base_num = len(orders)
+        print('base_num, ', base_num)
         for i in range(base_num):
             order = orders[i]
             locs_base[int(order)] = data['base_path']['video_path'][i]['location_id']
             video_base[int(order)] = data['base_path']['video_path'][i]['path']
+            print('location_id:', data['base_path']['video_path'][i]['location_id'],
+                  'path', data['base_path']['video_path'][i]['path'])
         # 2.fuse each tourist
         tourist_num = len(data['tourist'])
         print('base_num:', base_num, 'tourist_num:', tourist_num)
