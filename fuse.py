@@ -64,7 +64,7 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
     #生成目标视频文件
     fileName = result_path + '/' + tourist_id + '_' + time + '.mp4'
     print('fuse result:', fileName)
-    final_clip_video_audio = f.write_videofile(fileName, fps=24, remove_temp=False)
+    final_clip_video_audio = f.write_videofile(fileName, fps=24, remove_temp=True)
     # exit_target = result_path + "/target.mp4"
     # if not os.path.exists(exit_target):
     #     print("move mp4 file to result path")
@@ -73,8 +73,8 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
     print("video and audio done ")
 
 class Tourist:
-    def __init__(self, scenic_area_name='', id = -1, timestamp = -1, locs = [], paths = [], fuse_path = [], music_path = '', result_path = ''):
-        self.scenic_area_name = scenic_area_name
+    def __init__(self, scenic_id='', id = -1, timestamp = -1, locs = [], paths = [], fuse_path = [], music_path = '', result_path = ''):
+        self.scenic_id = scenic_id
         self.id = id
         self.timestamp = timestamp
         self.locs = locs
@@ -93,7 +93,7 @@ class Tourist:
 
     def send_json(self):
         path = self.result_path + '/' + self.id + '_' + self.timestamp + '.mp4'
-        scenicId = self.scenic_area_name
+        scenicId = self.scenic_id
         touristId = self.id
         json_data = {'scenicId':scenicId, 'touristId':touristId, 'path':os.path.abspath(path), 'timestamp':self.timestamp}
         r = requests.post("http://127.0.0.1:8084/algo/v1/video/saveVideo", json=json_data)
@@ -129,8 +129,10 @@ def testFlask():
     try:
         print('get')
         data = json.loads(flask.request.get_data(as_text=True))
-        scenic_area_name = data['scenic_area_name']
-        print('scenic_area_name:', scenic_area_name)
+        f=open('tempFuseInput.json','w',encoding='utf-8')
+        json.dump(data, f, indent=2) # indent 缩进控制
+        scenic_id = data['scenic_id']
+        print('scenic_id:', scenic_id)
         # 1.get base videos
         music_path = data['base_path']['music_path']
         result_path = data['result_path']
@@ -170,7 +172,7 @@ def testFlask():
                     if locs[k] == locs_base[j]:
                         fuse_path.append(paths[k])
                         break
-            tourist_infos.append(Tourist(scenic_area_name, tourist_id, timestamps[0], locs, paths, fuse_path, music_path, result_path))
+            tourist_infos.append(Tourist(scenic_id, tourist_id, timestamps[0], locs, paths, fuse_path, music_path, result_path))
         thread_fuse = threading.Thread(target=fuse_all_tourist, args=(tourist_infos,))
         thread_fuses.append(thread_fuse)
         thread_fuse.start()
@@ -197,7 +199,7 @@ def add_args(ap):
 
 if __name__ == '__main__':
 
-    app.run(host='127.0.0.1', port=9000, debug=True,
+    app.run(host='0.0.0.0', port=9000, debug=True,
         threaded=True, use_reloader=False)
     
     # ap = argparse.ArgumentParser()
