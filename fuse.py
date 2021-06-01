@@ -34,19 +34,19 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
     print('fuse ori file:')
     for videoFile in multi_video_list:
         print(videoFile)
-        video = mp.VideoFileClip(videoFile)
+        video = mp.VideoFileClip(videoFile, target_resolution=(720, 1280)) # target_resolution (high, width)
         L.append(video)
     # L = multi_video_list
     # 拼接视频
     final_clip_video = mp.concatenate_videoclips(L)
-    print(final_clip_video.duration)
+    # print(final_clip_video.duration)
 
     #获取音频
     print('fuse music file:', music_path)
     audioFile = music_path
     audioclip = mp.AudioFileClip(audioFile)
     #audioclip = audioclip.subclip(0, 30)
-    print('audioclip.duration:', audioclip.duration)
+    # print('audioclip.duration:', audioclip.duration)
 
     #判断视频文件和音频文件的长度，从而做出不同处理
     if final_clip_video.duration < audioclip.duration:
@@ -64,13 +64,15 @@ def stitchVideos(multi_video_list, result_path, tourist_id, time, music_path):
     #生成目标视频文件
     fileName = result_path + '/' + tourist_id + '_' + time + '.mp4'
     print('fuse result:', fileName)
+    print('---fuse video file begin---')
     final_clip_video_audio = f.write_videofile(fileName, fps=24, remove_temp=True)
+    print('---fuse video file end---')
     # exit_target = result_path + "/target.mp4"
     # if not os.path.exists(exit_target):
     #     print("move mp4 file to result path")
     #     #将拼接好的视频拷贝到result_path
     #     shutil.move(fileName, result_path)
-    print("video and audio done ")
+    print("fuse video and audio done ")
 
 class Tourist:
     def __init__(self, scenic_id='', id = -1, timestamp = -1, locs = [], paths = [], fuse_path = [], music_path = '', result_path = ''):
